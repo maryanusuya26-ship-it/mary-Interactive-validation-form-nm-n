@@ -1,0 +1,255 @@
+import React, { useState } from "react";
+
+export default function App() {
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  const [errors, setErrors] = useState({});
+
+  const validate = (field, value) => {
+    let newErrors = { ...errors };
+
+    switch (field) {
+      case "name":
+        if (!value.trim()) newErrors.name = "Name is required";
+        else if (value.length < 3) newErrors.name = "Name must be at least 3 characters";
+        else delete newErrors.name;
+        break;
+
+      case "email":
+        if (!value) newErrors.email = "Email is required";
+        else if (!/\S+@\S+\.\S+/.test(value)) newErrors.email = "Invalid email format";
+        else delete newErrors.email;
+        break;
+
+      case "password":
+        if (!value) newErrors.password = "Password is required";
+        else if (value.length < 6) newErrors.password = "Password must be at least 6 characters";
+        else delete newErrors.password;
+        break;
+
+      case "confirmPassword":
+        if (value !== form.password) newErrors.confirmPassword = "Passwords do not match";
+        else delete newErrors.confirmPassword;
+        break;
+
+      default:
+        break;
+    }
+    setErrors(newErrors);
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
+    validate(name, value);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    // Final validation before submission
+    Object.keys(form).forEach((key) => validate(key, form[key]));
+
+    if (Object.keys(errors).length === 0 && Object.values(form).every((val) => val !== "")) {
+      alert("✅ Form Submitted Successfully!");
+    } else {
+      alert("❌ Please fix the errors before submitting.");
+    }
+  };
+
+  return (
+    <div style={styles.container}>
+      <form style={styles.form} onSubmit={handleSubmit}>
+        <h2 style={styles.title}>Interactive Form Validation</h2>
+
+        <div style={styles.field}>
+          <label>Name</label>
+          <input
+            type="text"
+            name="name"
+            value={form.name}
+            onChange={handleChange}
+            style={inputStyle(errors.name)}
+          />
+          {errors.name && <p style={styles.error}>{errors.name}</p>}
+        </div>
+
+        <div style={styles.field}>
+          <label>Email</label>
+          <input
+            type="email"
+            name="email"
+            value={form.email}
+            onChange={handleChange}
+            style={inputStyle(errors.email)}
+          />
+          {errors.email && <p style={styles.error}>{errors.email}</p>}
+        </div>
+
+        <div style={styles.field}>
+          <label>Password</label>
+          <input
+            type="password"
+            name="password"
+            value={form.password}
+            onChange={handleChange}
+            style={inputStyle(errors.password)}
+          />
+          {errors.password && <p style={styles.error}>{errors.password}</p>}
+        </div>
+
+        <div style={styles.field}>
+          <label>Confirm Password</label>
+          <input
+            type="password"
+            name="confirmPassword"
+            value={form.confirmPassword}
+            onChange={handleChange}
+            style={inputStyle(errors.confirmPassword)}
+          />
+          {errors.confirmPassword && <p style={styles.error}>{errors.confirmPassword}</p>}
+        </div>
+
+        <button type="submit" style={styles.button}>
+          Submit
+        </button>
+      </form>
+    </div>
+  );
+}
+
+// 🎨 Inline Styling
+const styles = {
+  container: {
+    height: "100vh",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    background: "linear-gradient(135deg, #89f7fe, #66a6ff)",
+  },
+  form: {
+    background: "#fff",
+    padding: "30px",
+    borderRadius: "15px",
+    boxShadow: "0 5px 15px rgba(0,0,0,0.1)",
+    width: "350px",
+  },
+  title: {
+    textAlign: "center",
+    marginBottom: "20px",
+    color: "#333",
+  },
+  field: {
+    marginBottom: "15px",
+    display: "flex",
+    flexDirection: "column",
+  },
+  error: {
+    color: "red",
+    fontSize: "0.8em",
+  },
+  button: {
+    width: "100%",
+    padding: "10px",
+    background: "#66a6ff",
+    color: "#fff",
+    border: "none",
+    borderRadius: "8px",
+    cursor: "pointer",
+    fontSize: "1em",
+  },
+};
+
+const inputStyle = (error) => ({
+  padding: "10px",
+  borderRadius: "8px",
+  border: error ? "2px solid red" : "2px solid #ccc",
+  outline: "none",
+});
+body {
+  background: #f6f7fb;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+form {
+  background: #fff;
+  max-width: 400px;
+  margin: 40px auto;
+  padding: 32px 24px;
+  border-radius: 10px;
+  box-shadow: 0 2px 20px rgba(30,32,60,0.14);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+label {
+  font-weight: 600;
+}
+
+input {
+  padding: 10px 12px;
+  border: 1px solid #cfd8dc;
+  border-radius: 5px;
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+input:focus {
+  border-color: #2979ff;
+}
+
+button {
+  background: #2979ff;
+  color: #fff;
+  border: none;
+  padding: 12px 0;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.22s;
+}
+
+button:hover {
+  background: #1565c0;
+}
+
+.error {
+  color: #ec407a;
+  background: #fee;
+  border: 1px solid #ec407a;
+  padding: 4px 8px;
+  margin-top: 3px;
+  font-size: 14px;
+  border-radius: 5px;
+}
+
+.success {
+  color: #388e3c;
+  background: #e8f5e9;
+  border: 1px solid #388e3c;
+  padding: 6px 10px;
+  border-radius: 5px;
+  text-align: center;
+  margin-bottom: 8px;
+}
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import './index.css';
+import App from './App';
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
